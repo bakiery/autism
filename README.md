@@ -1,4 +1,4 @@
-# Autism-in-Children-A-CNN-Approach
+# autism
 Detect autism in children using CNNs. Analyze facial features to accurately identify autism. Preprocessing, model development, evaluation, and Grad-CAM visualization. Reliable diagnostic tool for early intervention.
 
 To download the dataset (source: gpiosenka from Kaggle) click on this link and unzip the files:
