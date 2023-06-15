@@ -3,7 +3,7 @@ import cv2
 from fastapi import FastAPI, File, UploadFile
 import requests
 from tensorflow import keras
-
+from autism.ml_logic import main, model, preprocessor
 
 app = FastAPI()
 
@@ -43,7 +43,6 @@ def root():
     return {"greeting": "Hello"}
 
 
-from autism.ml_logic import main, model, preprocessor
 @app.post('/test')
 def test_image(img: UploadFile=File(...)):
     im_resized = preprocessor.resize_58x64(img)
