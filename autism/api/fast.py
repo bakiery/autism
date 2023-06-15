@@ -45,7 +45,7 @@ def root():
 
 from autism.ml_logic import main, model, preprocessor
 @app.post('/test')
-def receive_image(img: UploadFile=File(...)):
+def test_image(img: UploadFile=File(...)):
     im_resized = preprocessor.resize_58x64(img)
     mdl = model.load_local_model()
     prediction = main.model_prediction(mdl, im_resized)
