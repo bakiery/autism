@@ -1,15 +1,34 @@
 import base64
 import requests
-import streamlit as st
+#import streamlit as st
+import numpy as np
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+#from autism.ml_logic import model, preprocessor
+
+
+def model_prediction(mdl, image):
+    '''model - keras CNN model
+    image - np.array
+    Returns: prediction'''
+
+    #input_image = '/home/alex/code/bakiery/Autism-in-Children-A-CNN-Approach/raw_data/autism/test/non_autistic/001.jpg'
+    #image = preprocessor.resize_58x64(input_image)
+    #mdl = model.load_local_model()
+
+    image = image/255
+    image = np.array([image])
+    prediction = mdl.predict(image)[0][0]
+
+    return prediction
+
 
 # file that connects everything together
 # Please note that this is a Markdown representation of the code. To use the code, copy it into a Python file (e.g., `main.py`), making sure to replace `'path_to_trained_cnn_model.h5'` with the actual path to your trained CNN model file.
 
 # Step 1: Load the trained CNN model
-cnn_model = load_model('path_to_trained_cnn_model.h5')
+#cnn_model = load_model('path_to_trained_cnn_model.h5')
 
 # Step 2: Define functions for performing facial assessment
 def preprocess_image(image):
@@ -84,4 +103,5 @@ def main():
 
 # Step 4: Run the Streamlit app
 if __name__ == '__main__':
-    main()
+    model_prediction()#('blabla', '111')
+    #main()

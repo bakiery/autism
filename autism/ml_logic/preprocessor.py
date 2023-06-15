@@ -2,11 +2,36 @@
 
 import numpy as np
 import pandas as pd
-from colorama import Fore, Style
+import cv2
+from mtcnn import MTCNN
+#from colorama import Fore, Style
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import ColumnTransformer, make_column_transformer
 from sklearn.preprocessing import OneHotEncoder, FunctionTransformer
-from taxifare.ml_logic.encoders import transform_time_features, transform_lonlat_features, compute_geohash
+#from taxifare.ml_logic.encoders import transform_time_features, transform_lonlat_features, compute_geohash
+
+def resize_58x64(input_image, output_image=None):
+    '''input_image - the whole path to the initial image
+    output_image - the name of an output image with the path
+    returns the image'''
+    inp_im = cv2.imread(input_image)
+    mtcnn = MTCNN()
+    SCALER = 1.1
+    ratio = 64 / 58
+
+    try:
+        data = mtcnn.detect_faces(inp_im)
+        box = data[0]['box']
+        bimg = inp_im[box[1]: box[1]+int(box[2]* SCALER * ratio), box[0]: box[0]+int(box[2]*SCALER)]
+        bimg_res = cv2.resize(bimg, (58,64))
+    except:
+        bimg_res = cv2.resize(inp_im, (58,64))
+
+    if not output_image == None:
+        cv2.imwrite(output_image, bimg_res)
+
+    return bimg_res
+
 def preprocess_features(X: pd.DataFrame) -> np.ndarray:
     def create_sklearn_preprocessor() -> ColumnTransformer:
         """
@@ -85,3 +110,8 @@ def preprocess_features(X: pd.DataFrame) -> np.ndarray:
     X_processed = preprocessor.fit_transform(X)
     print(":white_check_mark: X_processed, with shape", X_processed.shape)
     return X_processed
+
+if __name__ == "__main__":
+    input_image = '/home/alex/code/bakiery/Autism-in-Children-A-CNN-Approach/raw_data/autism/test/non_autistic/001.jpg'
+    output_image = '/home/alex/code/alex-mazheika/autism/out.jpg'
+    resize_58x64(input_image, output_image)
