@@ -6,13 +6,12 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 
 
-# Please note that this is a Markdown representation of the code. To use the code, copy it into a Python file (e.g., `main.py`), making sure to replace `'path_to_trained_cnn_model.h5'` and `'path_to_gradcam_model.h5'` with the actual paths to your trained CNN model and Grad-CAM model files.
+# Please note that this is a Markdown representation of the code. To use the code, copy it into a Python file (e.g., `main.py`), making sure to replace `'path_to_trained_cnn_model.h5'` with the actual path to your trained CNN model file.
 
-# Step 1: Load the trained CNN model and Grad-CAM model
+# Step 1: Load the trained CNN model
 cnn_model = load_model('path_to_trained_cnn_model.h5')
-gradcam_model = load_model('path_to_gradcam_model.h5')
 
-# Step 2: Define functions for performing facial assessment and generating Grad-CAM heatmap
+# Step 2: Define functions for performing facial assessment
 def preprocess_image(image):
     # Preprocess the image (resize, normalize, etc.)
     # Add your preprocessing steps here
@@ -20,27 +19,12 @@ def preprocess_image(image):
 
     return processed_image
 
-def generate_gradcam_heatmap(image):
-    # Preprocess the image
-    processed_image = preprocess_image(image)
-
-    # Generate Grad-CAM heatmap using the Grad-CAM model
-    gradcam_heatmap = gradcam_model.predict(processed_image)
-
-    # Convert the heatmap to an image
-    heatmap_image = ...
-
-    return heatmap_image
-
 def perform_facial_assessment(image):
     # Preprocess the image
     processed_image = preprocess_image(image)
 
     # Perform facial assessment using the trained CNN model
     cnn_prediction = cnn_model.predict(processed_image)
-
-    # Generate Grad-CAM heatmap
-    heatmap_image = generate_gradcam_heatmap(image)
 
     # Display the prediction result and probability
     st.subheader('Detection Result:')
@@ -56,9 +40,6 @@ def perform_facial_assessment(image):
         st.info('Classification: Not Autistic')
 
 
-    st.subheader('Heatmap:')
-    st.image(heatmap_image, caption='Heatmap', use_column_width=True)
-
 # Step 3: Create the Streamlit app
 def main():
     st.set_page_config(
@@ -69,6 +50,9 @@ def main():
     )
 
     st.title('Facial Assessment Tool')
+
+    # Add the custom CSS styles
+    st.markdown('<style>' + open('styles.css').read() + '</style>', unsafe_allow_html=True)
 
     # Display the introduction and instructions
     st.markdown('''
@@ -83,7 +67,7 @@ def main():
         # Read image file
         image = Image.open(uploaded_file)
 
-        # Perform facial assessment using the trained model and Grad-CAM
+        # Perform facial assessment using the trained model
         perform_facial_assessment(image)
 
     # Citation
@@ -93,8 +77,9 @@ def main():
 
         - [Bangor University Study](https://ward-lab.bangor.ac.uk/pubs/Scott_Ward_14_AQ.pdf)
         - [Deep Learning for Autism Diagnosis and Facial Analysis in Children](https://www.frontiersin.org/articles/10.3389/fncom.2021.789998/full)
-        - [Identification of Autism in Children Using Static Facial Features and Deep Neural Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC
-        This tool is provided for informational purposes only and is not a diagnostic tool. It assesses the likelihood of autism based on facial morphology, but a formal diagnosis should be made by a qualified healthcare professional.
+        - [Identification of Autism in Children Using Static Facial Features and Deep Neural Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8773918/)
+
+        Please note that this tool is provided for informational purposes only and is not a diagnostic tool. It assesses the likelihood of autism based on facial morphology, but a formal diagnosis should be made by a qualified healthcare professional.
         ''')
 
 # Step 4: Run the Streamlit app
