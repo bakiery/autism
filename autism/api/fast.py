@@ -3,7 +3,7 @@ import cv2
 from fastapi import FastAPI, File, UploadFile
 import requests
 from tensorflow import keras
-
+from autism.ml_logic import main, model, preprocessor
 
 app = FastAPI()
 
@@ -41,3 +41,10 @@ def root():
     Root endpoint for the API.
     """
     return {"greeting": "Hello"}
+
+@app.post('/test')
+def test_image(img: UploadFile=File(...)):
+    im_resized = preprocessor.resize_58x64(img)
+    mdl = model.load_local_model()
+    prediction = main.model_prediction(mdl, im_resized)
+    return prediction
