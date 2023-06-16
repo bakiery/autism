@@ -8,14 +8,16 @@
 import streamlit as st
 import requests
 import base64
+from PIL import Image
 
 # Set the API endpoint URL
-API_ENDPOINT = "http://your-api-endpoint" #The people with the backend will know. You will simulate the API on the computer to test if it's working before you upload.
+API_ENDPOINT = "http://your-api-endpoint"
 
 # Step 1: Load the trained CNN model
-cnn_model = load_model('path_to_trained_cnn_model.h5')
+#cnn_model = load_model('path_to_trained_cnn_model.h5')
+#NEED TO PROVIDE THE PATH TO THE CNN MODEL HERE BEFORE I UNCOMMENT THE COMMENTED LINES
 
-# Step 2: Define functions for performing facial assessment
+# Step 2: Define functions for preprocessing and prediction
 def preprocess_image(image):
     # Preprocess the image (resize, normalize, etc.)
     # Add your preprocessing steps here
@@ -23,7 +25,6 @@ def preprocess_image(image):
 
     return processed_image
 
-# Function to send the image to the API and get the prediction
 def get_prediction(image_bytes):
     # Convert image bytes to base64 string
     image_base64 = base64.b64encode(image_bytes).decode("utf-8")
@@ -46,20 +47,20 @@ def perform_facial_assessment(image):
     processed_image = preprocess_image(image)
 
     # Perform facial assessment using the trained CNN model
-    cnn_prediction = cnn_model.predict(processed_image)
+    #cnn_prediction = cnn_model.predict(processed_image)
 
     # Display the prediction result and probability
     st.subheader('Detection Result:')
-    autistic_probability = cnn_prediction[0][0] * 100
-    not_autistic_probability = 100 - autistic_probability
+    #autistic_probability = cnn_prediction[0][0] * 100
+    #not_autistic_probability = 100 - autistic_probability
 
-    st.success(f'Likelihood of being autistic: {autistic_probability:.2f}%')
-    st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}%')
+    #st.success(f'Likelihood of being autistic: {autistic_probability:.2f}%')
+    #st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}%')
 
-    if autistic_probability > 50:
-        st.info('Classification: Autistic')
-    else:
-        st.info('Classification: Not Autistic')
+    #if autistic_probability > 50:
+    #    st.info('Classification: Autistic')
+    #else:
+    #    st.info('Classification: Not Autistic')
 
 # Step 3: Create the Streamlit app
 def main():
