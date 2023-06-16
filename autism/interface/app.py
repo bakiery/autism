@@ -8,11 +8,23 @@
 import streamlit as st
 import requests
 import base64
+from PIL import Image
 
 # Set the API endpoint URL
-API_ENDPOINT = "http://your-api-endpoint" #The people with the backend will know. You will simulate the API on the computer to test if it's working before you upload.
+API_ENDPOINT = "http://your-api-endpoint"
 
-# Function to send the image to the API and get the prediction
+# Step 1: Load the trained CNN model
+#cnn_model = load_model('path_to_trained_cnn_model.h5')
+#NEED TO PROVIDE THE PATH TO THE CNN MODEL HERE BEFORE I UNCOMMENT THE COMMENTED LINES
+
+# Step 2: Define functions for preprocessing and prediction
+def preprocess_image(image):
+    # Preprocess the image (resize, normalize, etc.)
+    # Add your preprocessing steps here
+    processed_image = ...
+
+    return processed_image
+
 def get_prediction(image_bytes):
     # Convert image bytes to base64 string
     image_base64 = base64.b64encode(image_bytes).decode("utf-8")
@@ -30,30 +42,56 @@ def get_prediction(image_bytes):
 
     return result
 
-# Streamlit app
+def perform_facial_assessment(image):
+    # Preprocess the image
+    processed_image = preprocess_image(image)
+
+    # Perform facial assessment using the trained CNN model
+    #cnn_prediction = cnn_model.predict(processed_image)
+
+    # Display the prediction result and probability
+    st.subheader('Detection Result:')
+    #autistic_probability = cnn_prediction[0][0] * 100
+    #not_autistic_probability = 100 - autistic_probability
+
+    #st.success(f'Likelihood of being autistic: {autistic_probability:.2f}%')
+    #st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}%')
+
+    #if autistic_probability > 50:
+    #    st.info('Classification: Autistic')
+    #else:
+    #    st.info('Classification: Not Autistic')
+
+# Step 3: Create the Streamlit app
 def main():
-    # Set app title
-    st.title("Autistic Child Detection")
+    st.set_page_config(
+        page_title="Facial Assessment Tool",
+        page_icon="🧩",
+        layout="centered",
+        initial_sidebar_state="collapsed",
+    )
 
-    # File uploader for image
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    st.title('Facial Assessment Tool')
 
-    # Perform prediction if file is uploaded
+    # Add the custom CSS styles
+    st.markdown('<style>' + open('styles.css').read() + '</style>', unsafe_allow_html=True)
+
+    # Display the introduction and instructions
+    st.markdown('''
+        ## Facial Assessment Tool
+        Upload an image of a child to assess the likelihood of autism based on facial morphology.
+        ''')
+
+    # Upload image
+    uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
+
     if uploaded_file is not None:
-        # Convert uploaded image to bytes
-        image_bytes = uploaded_file.read()
+        # Read image file
+        image = Image.open(uploaded_file)
 
-        # Display the uploaded image
-        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        # Perform facial assessment using the trained model
+        perform_facial_assessment(image)
 
-        # Button to trigger the prediction
-        if st.button("Predict"):
-            # Get the prediction result
-            prediction = get_prediction(image_bytes)
-
-            # Display the prediction result
-            st.success(f"Prediction: {prediction}")
-
-# Run the app
-if __name__ == "__main__":
+# Step 4: Run the Streamlit app
+if __name__ == '__main__':
     main()

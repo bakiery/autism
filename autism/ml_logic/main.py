@@ -5,9 +5,7 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-
-# file that connects everything together
-# Please note that this is a Markdown representation of the code. To use the code, copy it into a Python file (e.g., `main.py`), making sure to replace `'path_to_trained_cnn_model.h5'` with the actual path to your trained CNN model file.
+import os
 
 def model_prediction(mdl, image):
     '''model - keras CNN model
@@ -67,8 +65,13 @@ def main():
 
     st.title('Facial Assessment Tool')
 
-    # Add the custom CSS styles
-    st.markdown('<style>' + open('styles.css').read() + '</style>', unsafe_allow_html=True)
+    # Check if the 'styles.css' file exists
+    if not os.path.isfile('styles.css'):
+        st.warning("The 'styles.css' file is missing. Please make sure it exists in the same directory as this script.")
+    else:
+        # Add the custom CSS styles
+        with open('styles.css') as f:
+            st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
     # Display the introduction and instructions
     st.markdown('''
