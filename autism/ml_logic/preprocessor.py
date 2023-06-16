@@ -15,7 +15,9 @@ def resize_58x64(input_image, output_image=None):
     '''input_image - the whole path to the initial image
     output_image - the name of an output image with the path
     returns the image'''
-    inp_im = cv2.imread(input_image)
+
+    #inp_im = cv2.imread(input_image)
+    inp_im = input_image
     mtcnn = MTCNN()
     SCALER = 1.1
     ratio = 64 / 58
