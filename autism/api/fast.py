@@ -1,41 +1,43 @@
 import numpy as np
-import cv2
 from fastapi import FastAPI, File, UploadFile
 import requests
-
-
+from fastapi.middleware.cors import CORSMiddleware
+import io
+import json
+import base64
+import logging
+import numpy as np
+from PIL import Image
+#from tensorflow import keras
+import models
+import uvicorn
 
 app = FastAPI()
 
-@app.post('/upload_image')
-async def receive_image(img: UploadFile=File(...)):   #################################### WHATS GOING ON HERE ?
-    ### Receiving and decoding the image
-    contents = await img.read()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=['*'],  # Allows all methods
+    allow_headers=['*'],  # Allows all headers
+)
 
-    nparr = np.fromstring(contents, np.uint8)
-    cv2_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # type(cv2_img) => numpy.ndarray
+@app.get('/')
+def test():
+    return {'hello' : 'friend'}
 
-    ### Do cool stuff with your image.... For example face detection
-    annotated_img = annotate_face(cv2_img) ############################################### WHATS GOING ON HERE ? DOESNT CONCERN US ?
+# @app.post('/upload_image_predict')
+# def test_image(img: UploadFile=File(...)):
+#     with open(img, "rb") as f:
+#         im_bytes = f.read()
+#         im_b64 = base64.b64encode(im_bytes).decode("utf8")
+#         img_bytes = base64.b64decode(im_b64.encode('utf-8'))
+#         # convert bytes data to PIL Image object
+#         img = Image.open(io.BytesIO(img_bytes))
+#         img = img.resize((256,256))
+#         # PIL image object to numpy array
+#         img_arr = np.asarray(img)
+#         model = keras.models.load_model('models/model_homemade.h5')
+#         prediction = model.predict(img_arr)
 
-    ### Encoding and responding with the image
-    im = cv2.imencode('.png', annotated_img)[1] # extension depends on which format is sent from Streamlit
-    return Response(content=im.tobytes(), media_type="image/png")
-
-
-
-
-@app.post('/predict')
-async def receive_image(img: UploadFile=File(...)):   #################################### WHATS GOING ON HERE ?
-    ### Receiving and decoding the image
-    contents = await img.read()
-
-    nparr = np.fromstring(contents, np.uint8)
-    cv2_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # type(cv2_img) => numpy.ndarray
-
-    ### Do cool stuff with your image.... For example face detection
-    annotated_img = annotate_face(cv2_img) ############################################### WHATS GOING ON HERE ? DOESNT CONCERN US ?
-
-    ### Encoding and responding with the image
-    im = cv2.imencode('.png', annotated_img)[1] # extension depends on which format is sent from Streamlit
-    return Response(content=im.tobytes(), media_type="image/png")
+#         return f'autism prediction : {prediction}'
