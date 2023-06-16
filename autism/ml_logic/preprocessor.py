@@ -35,6 +35,29 @@ def resize_58x64(input_image, output_image=None):
 
     return bimg_res
 
+def resize(inp_im, height, width):
+    '''input_image - np.array
+    height and width - integers
+    returns the image'''
+
+    mtcnn = MTCNN()
+    SCALER = 1.1
+    ratio = height / width
+
+    try:
+        data = mtcnn.detect_faces(inp_im)
+        box = data[0]['box']
+        bimg = inp_im[box[1]: box[1]+int(box[2]* SCALER * ratio), box[0]: box[0]+int(box[2]*SCALER)]
+        bimg_res = cv2.resize(bimg, (width,height))
+    except:
+        bimg_res = cv2.resize(inp_im, (width,height))
+
+    return bimg_res
+
+def rescale(inp_im):
+    '''rescales the image from [0:255] to [0:1]'''
+    return inp_im/255
+
 def preprocess_features(X: pd.DataFrame) -> np.ndarray:
     def create_sklearn_preprocessor() -> ColumnTransformer:
         """
