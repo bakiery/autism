@@ -25,7 +25,7 @@ def model_prediction(mdl, image):
     return prediction
 
 # Step 1: Load the trained CNN model
-cnn_model = load_model('path_to_trained_cnn_model.h5')
+#cnn_model = load_model('path_to_trained_cnn_model.h5')
 
 # Step 2: Define functions for performing facial assessment
 def preprocess_image(image):

@@ -5,6 +5,7 @@ import requests
 from tensorflow import keras
 from autism.ml_logic import main, model, preprocessor
 
+
 app = FastAPI()
 
 @app.post('/upload_image')
@@ -44,7 +45,18 @@ def root():
 
 @app.post('/test')
 def test_image(img: UploadFile=File(...)):
-    im_resized = preprocessor.resize_58x64(img)
+    import base64, io
+    from PIL import Image
+
+    im_bytes = img.file.read()
+    im_b64 = base64.b64encode(im_bytes).decode("utf8")
+    img_bytes = base64.b64decode(im_b64.encode('utf-8'))
+    img_c = Image.open(io.BytesIO(img_bytes))
+    img_arr = np.asarray(img_c)
+
+    im_resized = preprocessor.resize_58x64(img_arr)
     mdl = model.load_local_model()
     prediction = main.model_prediction(mdl, im_resized)
-    return prediction
+    prediction = float(prediction)
+
+    return f'autism probability: {round(prediction,2)}'
