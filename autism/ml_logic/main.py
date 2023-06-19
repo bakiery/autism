@@ -4,7 +4,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+#from tensorflow.keras.models import load_model
 
 # file that connects everything together
 # Please note that this is a Markdown representation of the code. To use the code, copy it into a Python file (e.g., `main.py`), making sure to replace `'path_to_trained_cnn_model.h5'` with the actual path to your trained CNN model file.
