@@ -9,21 +9,10 @@ import streamlit as st
 import requests
 import base64
 from PIL import Image
+import os
 
 # Set the API endpoint URL
-API_ENDPOINT = "http://your-api-endpoint"
-
-# Step 1: Load the trained CNN model
-#cnn_model = load_model('path_to_trained_cnn_model.h5')
-#NEED TO PROVIDE THE PATH TO THE CNN MODEL HERE BEFORE I UNCOMMENT THE COMMENTED LINES
-
-# Step 2: Define functions for preprocessing and prediction
-def preprocess_image(image):
-    # Preprocess the image (resize, normalize, etc.)
-    # Add your preprocessing steps here
-    processed_image = ...
-
-    return processed_image
+API_ENDPOINT = "https://autsim-wq7gvazpga-uc.a.run.app/"
 
 def get_prediction(image_bytes):
     # Convert image bytes to base64 string
@@ -38,31 +27,28 @@ def get_prediction(image_bytes):
     response = requests.post(API_ENDPOINT, json=payload)
 
     # Extract the prediction result from the response
-    result = response.json()["prediction"]
+    result = response.json()
 
     return result
 
 def perform_facial_assessment(image):
-    # Preprocess the image
-    processed_image = preprocess_image(image)
+    # Get prediction from API
+    prediction = get_prediction(image)
 
-    # Perform facial assessment using the trained CNN model
-    #cnn_prediction = cnn_model.predict(processed_image)
+    # Extract probabilities for autistic and not autistic
+    autistic_probability = prediction["autistic"]
+    not_autistic_probability = prediction["not_autistic"]
+
+    # Normalize probabilities to sum up to 1.0
+    total_probability = autistic_probability + not_autistic_probability
+    autistic_probability /= total_probability
+    not_autistic_probability /= total_probability
 
     # Display the prediction result and probability
     st.subheader('Detection Result:')
-    #autistic_probability = cnn_prediction[0][0] * 100
-    #not_autistic_probability = 100 - autistic_probability
+    st.success(f'Likelihood of being autistic: {autistic_probability:.2f}')
+    st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}')
 
-    #st.success(f'Likelihood of being autistic: {autistic_probability:.2f}%')
-    #st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}%')
-
-    #if autistic_probability > 50:
-    #    st.info('Classification: Autistic')
-    #else:
-    #    st.info('Classification: Not Autistic')
-
-# Step 3: Create the Streamlit app
 def main():
     st.set_page_config(
         page_title="Facial Assessment Tool",
@@ -73,8 +59,14 @@ def main():
 
     st.title('Facial Assessment Tool')
 
-    # Add the custom CSS styles
-    st.markdown('<style>' + open('styles.css').read() + '</style>', unsafe_allow_html=True)
+    # Check if the 'styles.css' file exists
+    css_file_path = os.path.join(os.path.dirname(__file__), 'styles.css')
+    if not os.path.isfile(css_file_path):
+        st.warning("The 'styles.css' file is missing. Please make sure it exists in the same directory as the script.")
+    else:
+        # Add the custom CSS styles
+        with open(css_file_path) as f:
+            st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
     # Display the introduction and instructions
     st.markdown('''
@@ -89,9 +81,8 @@ def main():
         # Read image file
         image = Image.open(uploaded_file)
 
-        # Perform facial assessment using the trained model
+        # Perform facial assessment using the API
         perform_facial_assessment(image)
 
-# Step 4: Run the Streamlit app
 if __name__ == '__main__':
     main()
