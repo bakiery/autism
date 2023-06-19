@@ -7,13 +7,13 @@
 
 import streamlit as st
 import requests
-import base64
 from PIL import Image
 import io
 import os
+import base64
 
 # Set the API endpoint URL
-API_ENDPOINT = "https://autsim-wq7gvazpga-uc.a.run.app/"
+API_ENDPOINT = "https://autsim-wq7gvazpga-ew.a.run.app/docs"
 
 def get_prediction(image_bytes):
     # Prepare the request payload
@@ -38,19 +38,22 @@ def perform_facial_assessment(image):
     # Get prediction from API
     prediction = get_prediction(image_bytes)
 
-    # Extract probabilities for autistic and not autistic
-    autistic_probability = prediction["autistic"]
-    not_autistic_probability = prediction["not_autistic"]
+    # Check if the prediction contains the necessary keys
+    if "autistic" in prediction and "not_autistic" in prediction:
+        autistic_probability = prediction["autistic"]
+        not_autistic_probability = prediction["not_autistic"]
 
-    # Normalize probabilities to sum up to 1.0
-    total_probability = autistic_probability + not_autistic_probability
-    autistic_probability /= total_probability
-    not_autistic_probability /= total_probability
+        # Normalize probabilities to sum up to 1.0
+        total_probability = autistic_probability + not_autistic_probability
+        autistic_probability /= total_probability
+        not_autistic_probability /= total_probability
 
-    # Display the prediction result and probability
-    st.subheader('Detection Result:')
-    st.success(f'Likelihood of being autistic: {autistic_probability:.2f}')
-    st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}')
+        # Display the prediction result and probability
+        st.subheader('Detection Result:')
+        st.success(f'Likelihood of being autistic: {autistic_probability:.2f}')
+        st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}')
+    else:
+        st.error("Failed to retrieve prediction from the API. Please try again.")
 
 def main():
     st.set_page_config(
