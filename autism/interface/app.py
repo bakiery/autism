@@ -9,18 +9,16 @@ import streamlit as st
 import requests
 import base64
 from PIL import Image
+import io
 import os
 
 # Set the API endpoint URL
 API_ENDPOINT = "https://autsim-wq7gvazpga-uc.a.run.app/"
 
 def get_prediction(image_bytes):
-    # Convert image bytes to base64 string
-    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-
     # Prepare the request payload
     payload = {
-        "image": image_base64
+        "image": base64.b64encode(image_bytes).decode("utf-8")
     }
 
     # Send POST request to the API endpoint
@@ -32,8 +30,13 @@ def get_prediction(image_bytes):
     return result
 
 def perform_facial_assessment(image):
+    # Convert image to bytes
+    image_bytes = io.BytesIO()
+    image.save(image_bytes, format='JPEG')
+    image_bytes = image_bytes.getvalue()
+
     # Get prediction from API
-    prediction = get_prediction(image)
+    prediction = get_prediction(image_bytes)
 
     # Extract probabilities for autistic and not autistic
     autistic_probability = prediction["autistic"]
@@ -83,6 +86,18 @@ def main():
 
         # Perform facial assessment using the API
         perform_facial_assessment(image)
+
+    # Citation
+    st.markdown('''
+        This tool is based on research papers conducted by Naomi Scott, Alex Lee Jones, Robin Stewart Samuel Kramer, Robert Ward, Mohammad-Parsa Hosseini, Madison Beary, Alex Hadsell,
+        Ryan Messersmith, Hamid Soltanian-Zadeh, K.K. Mujeeb Rahman and M. Monica Subashini. You can find the studies at the following links:
+
+        - [Bangor University Study](https://ward-lab.bangor.ac.uk/pubs/Scott_Ward_14_AQ.pdf)
+        - [Deep Learning for Autism Diagnosis and Facial Analysis in Children](https://www.frontiersin.org/articles/10.3389/fncom.2021.789998/full)
+        - [Identification of Autism in Children Using Static Facial Features and Deep Neural Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8773918/)
+
+        Please note that this tool is provided for informational purposes only and is not a diagnostic tool. It assesses the likelihood of autism based on facial morphology, but a formal diagnosis should be made by a qualified healthcare professional.
+        ''')
 
 if __name__ == '__main__':
     main()
