@@ -1,70 +1,64 @@
 # interface
-
-
-# transform uploaded image to bytes or base64
-# send the transformed image to the api using requests.post (requests library, post method)
-# get back the prediction, take it out of the json string, display it
-
 import streamlit as st
 import requests
 from PIL import Image
-#import io
 import os
-#import base64
+from streamlit_extras.colored_header import colored_header
+
 
 # Set the API endpoint URL
 API_URL = "https://autsim-wq7gvazpga-ew.a.run.app/"
 API_ENDPOINT = API_URL + "predict_image"
 
 def get_prediction(image_bytes):
-    # Prepare the request payload
-    #payload = {
-    #    "image": base64.b64encode(image_bytes).decode("utf-8")
-    #}
-
     # Send POST request to the API endpoint
-    response = requests.post(API_ENDPOINT, files={"img":image_bytes.getvalue()})
+    response = requests.post(API_ENDPOINT, files={"img": image_bytes.getvalue()})
 
     # Extract the prediction result from the response
     result = response.json()
 
     return result
 
-#def perform_facial_assessment(image):
-    # Convert image to bytes
-    #image_bytes = io.BytesIO()
-    #image.save(image_bytes, format='JPEG')
-    #image_bytes = image_bytes.getvalue()
-
-    # Get prediction from API
-    #prediction = get_prediction(image_bytes)
-
-    # Check if the prediction contains the necessary keys
-    #if "autistic" in prediction and "not_autistic" in prediction:
-        #autistic_probability = prediction["autistic"]
-        #not_autistic_probability = prediction["not_autistic"]
-
-        # Normalize probabilities to sum up to 1.0
-        #total_probability = autistic_probability + not_autistic_probability
-        #autistic_probability /= total_probability
-        #not_autistic_probability /= total_probability
-
-        # Display the prediction result and probability
-        #st.subheader('Detection Result:')
-        #st.success(f'Likelihood of being autistic: {autistic_probability:.2f}')
-        #st.info(f'Likelihood of not being autistic: {not_autistic_probability:.2f}')
-    #else:
-        #st.error("Failed to retrieve prediction from the API. Please try again.")
-
 def main():
-    st.set_page_config(
-        page_title="Facial Assessment Tool",
-        page_icon="🧩",
-        layout="centered",
-        initial_sidebar_state="collapsed",
-    )
+    # Load the logo image
+    logo_image = Image.open("/Users/annabachmann/code/bakiery/REAL-autism-frontend/autistic_logo_light.png")
 
-    st.title('Facial Assessment Tool')
+    # Resize the logo image
+    current_width, current_height = logo_image.size
+    max_width = 200  # Specify the maximum width of the resized logo
+    max_height = 100  # Specify the maximum height of the resized logo
+
+    # Calculate the aspect ratio
+    aspect_ratio = current_width / current_height
+
+    # Calculate the resized dimensions based on the maximum width or height
+    if current_width > current_height:
+        # If the current image is wider
+        desired_width = min(current_width, max_width)
+        desired_height = int(desired_width / aspect_ratio)
+    else:
+        # If the current image is taller or square
+        desired_height = min(current_height, max_height)
+        desired_width = int(desired_height * aspect_ratio)
+
+    # Resize the logo image
+    logo_image_resized = logo_image.resize((desired_width, desired_height))
+
+    st.set_page_config(
+        page_title="Is My Child Autistic?",
+        page_icon="🧩",
+        layout="wide",
+        initial_sidebar_state="auto",
+    )
+    # Place the resized logo image in the sidebar
+    st.sidebar.image(logo_image_resized)
+
+    # Display the title in the main section
+    colored_header(
+    label="Is My Child Autistic?",
+    description="Find out the possibility of your child having autism with AI facial detection",
+    color_name="violet-70",
+)
 
     # Check if the 'styles.css' file exists
     css_file_path = os.path.join(os.path.dirname(__file__), 'styles.css')
@@ -75,35 +69,65 @@ def main():
         with open(css_file_path) as f:
             st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
-    # Display the introduction and instructions
-    st.markdown('''
-        ## Facial Assessment Tool
-        Upload an image of a child to assess the likelihood of autism based on facial morphology.
-        ''')
+    # Sidebar navigation
+    pages = ['Home', 'About']
+    page = st.sidebar.selectbox('Navigate', options=pages)
 
-    # Upload image
-    uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
+    if page == 'Home':
+        # Display the introduction and instructions
+        st.markdown('''
+            ## AI Facial Assessment Tool
 
-    if uploaded_file is not None:
-        # Read image file
-        image = Image.open(uploaded_file)
-        st.image(image)
+    This tool is designed to provide information about facial features associated with Autism Spectrum Disorder (ASD). Please follow the instructions below to use the tool effectively:
 
-        # Perform facial assessment using the API
-        result = get_prediction(uploaded_file)
-        st.write(result)
+    1. Upload a photo: Click on the "Upload Photo" button to select and upload a photo of the individual whose facial features you would like to analyze.
 
-    # Citation
-    st.markdown('''
-        This tool is based on research papers conducted by Naomi Scott, Alex Lee Jones, Robin Stewart Samuel Kramer, Robert Ward, Mohammad-Parsa Hosseini, Madison Beary, Alex Hadsell,
-        Ryan Messersmith, Hamid Soltanian-Zadeh, K.K. Mujeeb Rahman and M. Monica Subashini. You can find the studies at the following links:
+    2. Analyze facial features: Once the photo is uploaded, the tool will analyze the facial features based on research findings related to ASD. The analysis may take a few moments.
 
-        - [Bangor University Study](https://ward-lab.bangor.ac.uk/pubs/Scott_Ward_14_AQ.pdf)
-        - [Deep Learning for Autism Diagnosis and Facial Analysis in Children](https://www.frontiersin.org/articles/10.3389/fncom.2021.789998/full)
-        - [Identification of Autism in Children Using Static Facial Features and Deep Neural Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8773918/)
+    3. Interpretation: After the analysis is complete, the tool will provide you with the likelihood of the child having autism based on their facial landmarks, compared against faces from the trained datasets of other autistic and non-autistic children's faces. Please remember that this tool is for informational purposes only and should not be used as a diagnostic tool. A formal diagnosis of autism should be made by a qualified healthcare professional.
 
-        Please note that this tool is provided for informational purposes only and is not a diagnostic tool. It assesses the likelihood of autism based on facial morphology, but a formal diagnosis should be made by a qualified healthcare professional.
-        ''')
+    Interpretation of Scores:
+    - Score below 0.3: Indicates a lower likelihood of ASD-related facial features.
+    - Score between 0.3 and 0.7: Suggests a moderate likelihood of ASD-related facial features.
+    - Score above 0.7: Indicates a higher likelihood of ASD-related facial features.
+
+            ''')
+
+        # Upload image
+        uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
+
+        if uploaded_file is not None:
+            # Read image file
+            image = Image.open(uploaded_file)
+            st.image(image)
+
+            # Perform facial assessment using the API
+            result = get_prediction(uploaded_file)
+            probability = result["prediction"][0][0]
+            st.subheader(f'Probability of Autism: {probability}')
+
+    elif page == 'About':
+        st.markdown('''
+    ## Understanding Facial Features Associated with Autism Spectrum Disorder (ASD)
+    Recent studies have identified certain facial features that are commonly observed in children with Autism Spectrum Disorder (ASD). These features include a broader top face, a shorter midface, eyes with a wider palpebral fissure length (PFL) and interpupillary distance (IPD), a wider mouth, and a shorter and wider philtrum (the groove between the nose and top lip)[1].
+
+    Moreover, there are suggestions from other sources that indicate a potential association between ASD and other features such as larger lips and small tufting in spots at the hairline. However, it's important to note that these features are not universally present in individuals with autism and require further verification through additional research.
+
+    Baron-Cohen’s extreme male brain theory proposes that autism results from elevated prenatal testosterone levels. In a separate study [2] on adult morphology and facial features associated with masculinity, researchers created composite images capturing statistical regularities in facial appearance linked to high and low Autism-Spectrum Quotient (AQ) scores. However, given the lack of available, verificable data, this model has not been trained on autistic adult faces.
+
+    It's worth mentioning that these facial features associated with autism are generally subtle and may not be noticeably distinct to the average observer. Additionally, the presence of these features can vary within the autistic population, as autism itself encompasses a range of characteristics.
+
+    Please note that this tool is for informational purposes only and should not be used as a diagnostic tool. A formal diagnosis of autism should be made by a qualified healthcare professional.
+
+    ### References
+    For more information and references, please refer to the studies provided:
+
+    - Mujeeb Rahman KK and Subashini MM. "Identification of Autism in Children Using Static Facial Features and Deep Neural Networks." *Brain Sci*, vol. 12, no. 1, 2022, article 94. doi: [10.3390/brainsci12010094](https://doi.org/10.3390/brainsci12010094). PMID: 35053837; PMCID: PMC8773918. [1]
+
+    - Naomi Scott, Alex Lee Jones, Robin Stewart Samuel Kramer, and Robert Ward. "Deep Learning for Autism Diagnosis and Facial Analysis in Children." *Frontiers in Computational Neuroscience*, vol. 15, 2022, article 789998. doi: [10.3389/fncom.2021.789998](https://doi.org/10.3389/fncom.2021.789998). ISSN: 1662-5188. [2]
+
+    - Naomi Jane Scott, Alex Lee Jones, Robin Stewart Samuel Kramer, and Robert Ward. "Facial dimorphism in autistic quotient scores." *Clinical Psychological Science*, vol. 3, no. 2, 2015, pp. 230–241. doi: [10.1177/2167702614534238](https://doi.org/10.1177/2167702614534238). [3]
+    ''')
 
 if __name__ == '__main__':
     main()
