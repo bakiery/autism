@@ -1,5 +1,7 @@
 # Facial Assessment Tool
 
+<img width="365" alt="autism_logo" src="https://github.com/bakiery/autism/assets/128114576/189f2f8d-ed41-41eb-a3bb-eb49c0bd16c5">
+
 LINK TO THE TOOL --> https://ismychildautistic.streamlit.app/
 
 The Facial Assessment Tool is a web application that allows users to upload an image of a child and assess the likelihood of autism based on facial morphology. The tool uses a machine learning model trained on facial features to make predictions.
