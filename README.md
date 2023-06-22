@@ -12,6 +12,16 @@ Detect autism in children using CNNs. Analyze facial features to accurately iden
 - Display the likelihood of being autistic based on facial morphology
 - Visualize the classification result and probability
 
+## Interpretation of Scores
+- Score below 30%:
+Indicates a lower likelihood of ASD-related facial features.
+- Score between 30% to 70%:
+Suggests a moderate likelihood of ASD-related facial features.
+- Score above 70%:
+Indicates a higher likelihood of ASD-related facial features.
+
+The accuracy of prediction of the model is 90%, meaning 1/10 predictions could be incorrect. Please try several images in order to ensure the suggested result is more accurate.
+
 ## Installation
 
 1. Clone the repository:
