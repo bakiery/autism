@@ -81,5 +81,5 @@ Naomi Jane Scott, Alex Lee Jones, Robin Stewart Samuel Kramer, and Robert Ward. 
 
 **Disclaimer:** Please note that this tool is provided for informational purposes only and is not a diagnostic tool. It assesses the likelihood of autism based on facial morphology, but a formal diagnosis should be made by a qualified healthcare professional.
 
-To download the dataset (source: gpiosenka from Kaggle) click on this link and unzip the files:
+To download the dataset (source: gpiosenka) click on this link and unzip the files:
 https://drive.google.com/drive/folders/1XQU0pluL0m3TIlXqntano12d68peMb8A
